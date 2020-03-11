@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PhysiCell_settings version="devel-version">
+	<domain>
+		<x_min>-1000</x_min>
+		<x_max>1000</x_max>
+		<y_min>-1000</y_min>
+		<y_max>1000</y_max>
+		<z_min>-10</z_min>
+		<z_max>10</z_max>
+		<dx>20</dx>
+		<dy>20</dy>
+		<dz>20</dz>
+		<use_2D>true</use_2D>
+	</domain>
+	
+	<overall> 
+		<max_time units="min">10080</max_time> <!-- 5 days * 24 h * 60 min 10080 -->
+		<time_units>min</time_units>
+		<space_units>micron</space_units>
+	</overall>
+	
+	<parallel>
+		<omp_num_threads>8</omp_num_threads>
+	</parallel> 
+	
+	<save>
+		<folder>output</folder> <!-- use . for root --> 
+
+		<full_data>
+			<interval units="min">180</interval>
+			<enable>ture</enable>
+		</full_data>
+		
+		<SVG>
+			<interval units="min">60</interval>
+			<enable>true</enable>
+		</SVG>
+		
+		<legacy_data>
+			<enable>false</enable>
+		</legacy_data>
+	</save>
+	
+	<microenvironment_setup>
+		<variable name="oxygen" units="mmHg" ID="0">
+			<physical_parameter_set>                         <!-- 100000.0 -->
+				<diffusion_coefficient units="micron^2/min">100000.0</diffusion_coefficient>
+				<decay_rate units="1/min">0.1</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mmHg">38.0</initial_condition>
+			<Dirichlet_boundary_condition units="mmHg" enabled="true">38.0</Dirichlet_boundary_condition>
+		</variable>
+
+		<variable name="factorC" units="mmHg" ID="1">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">100000.0</diffusion_coefficient>
+				<decay_rate units="1/min">0.0</decay_rate>  
+			</physical_parameter_set>
+			<initial_condition units="mmHg">0.0</initial_condition>
+			<Dirichlet_boundary_condition units="mmHg" enabled="false">38.0</Dirichlet_boundary_condition>
+		</variable>
+		
+		<options>
+			<calculate_gradients>true</calculate_gradients>
+			<track_internalized_substrates_in_each_agent>true</track_internalized_substrates_in_each_agent>
+			<!-- not yet supported --> 
+			<initial_condition type="matlab" enabled="false">
+				<filename>./config/initial.mat</filename>
+			</initial_condition>
+			<!-- not yet supported --> 
+			<dirichlet_nodes type="matlab" enabled="false">
+				<filename>./config/dirichlet.mat</filename>
+			</dirichlet_nodes>
+		</options>
+	</microenvironment_setup>	
+	
+	<user_parameters>
+		<random_seed type="int" units="dimensionless">0</random_seed> 
+		<!-- example parameters from the template --> 
+		<!-- stem cell properties --> 
+		<CSC_birth_rate type="double" units="1/min" description="CSC birth rate">2.777777777777778e-04</CSC_birth_rate> <!-- 60 hours --> <!-- done --> 
+		<CSC_apoptosis_rate type="double" units="1/min" description="CSC apoptosis rate">0.0</CSC_apoptosis_rate>
+		<differentiation_probability type="double" description="probability that a new CSC differentiates">0.2</differentiation_probability>
+		
+		<!-- differentiated cell properties --> 
+		<DCC_birth_rate type="double" units="1/min" description="DCC birth rate">2.777777777777778e-04</DCC_birth_rate> <!-- 18 hours --> <!-- done --> 
+		<DCC_apoptosis_rate type="double" units="1/min" description="DCC apoptosis rate">1.3888888888888e-04</DCC_apoptosis_rate>	<!-- chosen so they live about 2 cycles --> 
+				                                                                    <!-- 4.629629629629630e-04 -->
+		<!-- tissue setup --> 
+		<number_of_stem_cells type="int" description="initial number of cancer stem cells">200</number_of_stem_cells> 
+		<number_of_differentiated_cells type="int" description="initial number of differentiated cancer cells">100</number_of_differentiated_cells> 
+		
+		<!-- other setup -->
+		<disable_diffusion type="bool" description="set this to true for faster testing, but no chemokines">true</disable_diffusion> <!-- done --> 
+		<fixed_cycle_duration type="bool" description="is cell cycle length fixed?">false</fixed_cycle_duration> 
+		
+		<!-- pressure-->
+		<cell_pressure type="double" description="pressure" units="dimensionless">0</cell_pressure>
+
+
+		<!-- therapy --> 
+		
+		<therapy_time type="double" description="radiation therapy activation time" units="min">12.0</therapy_time>
+		<therapy_death_fraction type="double" description="fraction killed by radiation" units="dimensionless">0.8</therapy_death_fraction>
+		<therapy_dedifferenation_rate type="double" description="therapy_dedifferenation_rate" units="dimensionless">0.0</therapy_dedifferenation_rate>
+		<disable_dedifferenation type="bool" description="disable_dedifferenation?">true</disable_dedifferenation> 
+		<disable_radiothreapy type="bool" description="disable_dedifferenation?">true</disable_radiothreapy> 
+
+		<factorC_proliferation_saturation type="double" description="factorC_proliferation_saturation" units="dimensionless">1.0</factorC_proliferation_saturation>
+		<factorC_proliferation_threshold type="double" description="factorC_proliferation_threshold" units="dimensionless">0.0</factorC_proliferation_threshold>
+
+		<!-- feedback --> 
+		<disable_feedback_differentiation_prob type="bool" description="disable_feedback_differentiation?">ture</disable_feedback_differentiation_prob>
+		<disable_feedback_division_rate type="bool" description="disable_feedback_division_rate?">true</disable_feedback_division_rate>
+		<contact_inhibition type="bool" description="disable_contact_inhibition?">true</contact_inhibition>
+		<feedback_Number_on_Transition type="bool" description="disable_feedback_division_rate?">false</feedback_Number_on_Transition>
+		<feedback_Number_on_diff_prob type="bool" description="disable_feedback_division_rate?">false</feedback_Number_on_diff_prob>
+		<Trigger_thearpy type="bool" description="disable_contact_inhibition?">false</Trigger_thearpy>
+		<thearpy_dedifferentiation type="bool" description="disable_contact_inhibition?">false</thearpy_dedifferentiation>
+
+	</user_parameters>
+	
+</PhysiCell_settings>
